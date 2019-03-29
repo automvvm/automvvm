@@ -1,0 +1,59 @@
+﻿// --------------------------------------------------------------------------------
+// <copyright file="PropertyBindingDirection.cs" company="AutoMvvm Development Team">
+// Copyright © 2019 AutoMvvm Development Team
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+// </copyright>
+// --------------------------------------------------------------------------------
+
+namespace AutoMvvm
+{
+    /// <summary>
+    /// Defines the direction of a property binding.
+    /// </summary>
+    public enum PropertyBindingDirection
+    {
+        /// <summary>
+        /// Updates are made in whichever direction is possible based on the property accessors available,
+        /// the source is reset by the initial values in the target unless the source is read-only where
+        /// it will update the target instead.
+        /// </summary>
+        Default,
+
+        /// <summary>
+        /// Updates are made in both directions, the source is reset by the initial values from the target.
+        /// </summary>
+        TwoWayResetSource,
+
+        /// <summary>
+        /// Updates are made in both directions, the target is reset by the initial values from the source.
+        /// </summary>
+        TwoWayResetTarget,
+
+        /// <summary>
+        /// Updates are made from the target to the source only.
+        /// </summary>
+        OneWayToSource,
+
+        /// <summary>
+        /// Updates are made from the source to the target only.
+        /// </summary>
+        OneWayToTarget
+    }
+}

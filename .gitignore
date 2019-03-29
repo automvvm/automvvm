@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Diff tools
+*.orig
+
 # User-specific files
 *.suo
 *.user
@@ -19,6 +22,7 @@
 [Rr]eleases/
 x64/
 x86/
+build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -140,6 +144,8 @@ _TeamCity*
 _NCrunch_*
 .*crunch*.local.xml
 nCrunchTemp_*
+*.ncrunchproject
+*.ncrunchsolution
 
 # MightyMoose
 *.mm.*

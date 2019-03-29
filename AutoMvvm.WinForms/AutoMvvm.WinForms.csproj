@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>AutoMvvm Development Team</Authors>
+    <Company>AutoMvvm Development Team</Company>
+    <Product>AutoMvvm.WinForms</Product>
+    <Description>The Windows Forms AutoMvvm library extensions for supporting view to view model bindings with Windows Forms controls.</Description>
+    <Copyright>Copyright © 2019 AutoMvvm Development Team</Copyright>
+    <PackageProjectUrl>https://github.com/automvvm/automvvm</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/automvvm/automvvm</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>AutoMvvm,MVVM,WinForms,Windows.Forms</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoMvvm\AutoMvvm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+</Project>

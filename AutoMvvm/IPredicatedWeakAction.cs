@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="QueuedEventExtensions.cs" company="AutoMvvm Development Team">
+// <copyright file="IPredicatedAction.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,38 +23,17 @@
 // --------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMvvm.Design;
 
-namespace AutoMvvm.Fluent
+namespace AutoMvvm
 {
     /// <summary>
-    /// Extensions methods for queuing and handling events.
+    /// Defines a predicated action delegate interface with a weak reference to the target.
     /// </summary>
-    public static class QueuedEventExtensions
+    public interface IPredicatedWeakAction : IWeakAction
     {
         /// <summary>
-        /// Binds the given event.
+        /// Gets the predicate upon which to execute the action.
         /// </summary>
-        /// <param name="source">The source to bind.</param>
-        /// <param name="event">The event to bind to.</param>
-        /// <returns>An event binding builder.</returns>
-        public static IEventBuilder WithEvent(this object source, Event @event)
-        {
-            return new EventBuilder(source, @event);
-        }
-
-        /// <summary>
-        /// Sends an event for the source object.
-        /// </summary>
-        /// <param name="source">The source object.</param>
-        /// <param name="event">The event to send.</param>
-        /// <param name="e">The event arguments</param>
-        public static void SendEvent(this object source, Event @event, EventArgs e)
-        {
-            var events = source.Get<EventQueue>();
-            events.Events.Enqueue(new ReceivedEvent(source, @event, e));
-        }
+        Func<object, bool> Predicate { get; }
     }
 }

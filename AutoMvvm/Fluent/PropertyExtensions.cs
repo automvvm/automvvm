@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PredicatedAction.cs" company="AutoMvvm Development Team">
+// <copyright file="PropertyExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,55 +22,37 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System;
+using System.Collections.Generic;
+using AutoMvvm.Design;
 
-namespace AutoMvvm
+namespace AutoMvvm.Fluent
 {
     /// <summary>
-    /// A basic predicated action executed on an entity of type <typeparamref name="T"/>
+    /// Extension methods for property bindings.
     /// </summary>
-    public class PredicatedAction<T> : IPredicatedAction<T>
+    public static class PropertyExtensions
     {
         /// <summary>
-        /// Gets the predicate upon which to execute the action.
+        /// Adds all the property bindings in the collection to the binding store for the given source entity.
         /// </summary>
-        public Func<T, bool> Predicate { get; }
-
-        /// <summary>
-        /// Gets the bound action.
-        /// </summary>
-        public Action<T> Action { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PredicatedAction{T}"/> class.
-        /// </summary>
-        /// <param name="predicate">The action to decide whether to execute.</param>
-        /// <param name="action"></param>
-        public PredicatedAction(Func<T, bool> predicate, Action<T> action)
+        /// <param name="source">The source entity to bind.</param>
+        /// <param name="propertyBindings">The property bindings to add.</param>
+        public static void AddPropertyBindings(this object source, IEnumerable<PropertyBinding> propertyBindings)
         {
-            Predicate = predicate;
-            Action = action;
+            var propertyBindingStore = source.Get<PropertyBindingStore>();
+            foreach (var propertyBinding in propertyBindings)
+                propertyBindingStore.PropertyBindings.Add(propertyBinding);
         }
 
         /// <summary>
-        /// Executes the action if the predicate is <c>true</c>.
+        /// Adds an property binding to the binding store for the given source entity.
         /// </summary>
-        /// <param name="entity">The entity to act upon.</param>
-        public void Execute(T entity)
+        /// <param name="source">The source entity to bind.</param>
+        /// <param name="propertyBinding">The property binding to add.</param>
+        public static void AddEventBinding(this object source, PropertyBinding propertyBinding)
         {
-            ExecuteAction(entity);
-        }
-
-        /// <summary>
-        /// Executes the action if the predicate is <c>true</c>.
-        /// </summary>
-        /// <param name="entity">The entity to act upon.</param>
-        protected virtual void ExecuteAction(T entity)
-        {
-            if (Predicate?.Invoke(entity) == false)
-                return;
-
-            Action(entity);
+            var propertyBindingStore = source.Get<PropertyBindingStore>();
+            propertyBindingStore.PropertyBindings.Add(propertyBinding);
         }
     }
 }

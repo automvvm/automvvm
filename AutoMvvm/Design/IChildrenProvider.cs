@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="IChildrenProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
+using System.Collections.Generic;
 
-namespace AutoMvvm.TestApp
+namespace AutoMvvm.Design
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Defines the interface for an entity which provides children.
+    /// </summary>
+    public interface IChildrenProvider
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
-        {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
-        }
+        /// <summary>
+        /// Gets a collection of children of this entity.
+        /// </summary>
+        IEnumerable<object> Children { get; }
     }
 }

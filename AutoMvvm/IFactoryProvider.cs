@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="QueuedEventExtensions.cs" company="AutoMvvm Development Team">
+// <copyright file="IFactoryProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,22 +22,19 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
+using System;
 
-namespace AutoMvvm.WinForms
+namespace AutoMvvm
 {
     /// <summary>
-    /// Defines a <see cref="ComboBox"/> event.
+    /// Defines a type generator provider that instantiates an instance of any given type.
     /// </summary>
-    public class ComboBoxEvent : Event
+    public interface IFactoryProvider
     {
         /// <summary>
-        /// Initializes a new <see cref="ComboBoxEvent"/> class.
+        /// Creates an instance of a factory method.
         /// </summary>
-        /// <param name="name">The name of the event.</param>
-        public ComboBoxEvent(string name)
-            : base(name)
-        {
-        }
+        /// <returns>An instance of a factory method.</returns>
+        Func<Type, object> GetFactory();
     }
 }

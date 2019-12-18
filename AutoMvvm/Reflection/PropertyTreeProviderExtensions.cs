@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="PropertyTreeProviderExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,35 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
+using AutoMvvm.Design;
 
-namespace AutoMvvm.TestApp
+namespace AutoMvvm.Reflection
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Extension methods to provide a property tree mapped source entity.
+    /// </summary>
+    public static class PropertyTreeProviderExtensions
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
+        /// <summary>
+        /// Gets the <see cref="ITreeMappingProvider"/> for the given source object
+        /// and assigns it the given name.
+        /// </summary>
+        /// <param name="source">The source object.</param>
+        /// <param name="name">The name of the source object.</param>
+        /// <returns>The tree mapping provider.</returns>
+        public static ITreeMappingProvider GetTreeMappingProvider(this object source, string name)
         {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
+            if (source == null)
+                return null;
+
+            var provider = source.Get<PropertyTreeProvider>();
+            if (provider.Source != null)
+                return provider;
+
+            // Assign the name and source.  This builds the property tree.
+            provider.Name = name;
+            provider.Source = source;
+            return provider;
         }
     }
 }

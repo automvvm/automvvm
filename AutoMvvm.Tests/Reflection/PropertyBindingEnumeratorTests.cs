@@ -41,19 +41,20 @@ namespace AutoMvvm.Reflection.Tests
         {
             private TestSourceEntity _testSourceEntity;
             private TestTargetEntity _testTargetEntity;
-            private PropertyBindingEnumerator<TestTargetEntity> _propertyBindingEnumerator;
+            private PropertyBindingEnumerator _propertyBindingEnumerator;
 
             protected override void Setup()
             {
                 base.Setup();
                 _testSourceEntity = new TestSourceEntity();
-                _testTargetEntity = _testSourceEntity.GetViewModel();
-                _propertyBindingEnumerator = new PropertyBindingEnumerator<TestTargetEntity>(_testSourceEntity);
+                _testTargetEntity = new TestTargetEntity();
+                _testSourceEntity.GetTreeMappingProvider("Source");
             }
 
             [Test]
-            public void ItShouldCreateBindingWithSourcePropertyName()
+            public void ItShouldCreateBindingWithTestControlTextProperty()
             {
+                _propertyBindingEnumerator = new PropertyBindingEnumerator(_testSourceEntity.TestControl, _testTargetEntity);
                 _propertyBindingEnumerator.Should().Contain(
                     x => x.SourceProperty.Source == _testSourceEntity.TestControl &&
                     x.SourceProperty.Name == "Text" && x.TargetProperty.Name == nameof(TestTargetEntity.TestControlText));
@@ -62,6 +63,7 @@ namespace AutoMvvm.Reflection.Tests
             [Test]
             public void ItShouldCreateDefaultPropertyBinding()
             {
+                _propertyBindingEnumerator = new PropertyBindingEnumerator(_testSourceEntity.TestControlWithDefaultProperty, _testTargetEntity);
                 _propertyBindingEnumerator.Should().Contain(
                     x => x.SourceProperty.Source == _testSourceEntity.TestControlWithDefaultProperty &&
                     x.SourceProperty.Name == "Text" && x.TargetProperty.Name == nameof(TestTargetEntity.TestControlWithDefaultProperty));
@@ -70,6 +72,7 @@ namespace AutoMvvm.Reflection.Tests
             [Test]
             public void ItShouldCreateDefaultBindingPropertyBinding()
             {
+                _propertyBindingEnumerator = new PropertyBindingEnumerator(_testSourceEntity.TestControlWithDefaultBindingProperty, _testTargetEntity);
                 _propertyBindingEnumerator.Should().Contain(
                     x => x.SourceProperty.Source == _testSourceEntity.TestControlWithDefaultBindingProperty &&
                     x.SourceProperty.Name == "Text" && x.TargetProperty.Name == nameof(TestTargetEntity.TestControlWithDefaultBindingProperty));
@@ -78,6 +81,7 @@ namespace AutoMvvm.Reflection.Tests
             [Test]
             public void ItShouldCreateNonDefaultBinding()
             {
+                _propertyBindingEnumerator = new PropertyBindingEnumerator(_testSourceEntity.TestControlWithDefaultBindingProperty, _testTargetEntity);
                 _propertyBindingEnumerator.Should().Contain(
                     x => x.SourceProperty.Source == _testSourceEntity.TestControlWithDefaultBindingProperty &&
                     x.SourceProperty.Name == "List" && x.TargetProperty.Name == nameof(TestTargetEntity.TestControlWithDefaultBindingPropertyList));
@@ -103,7 +107,7 @@ namespace AutoMvvm.Reflection.Tests
             public IList<string> List { get; } = new List<string>();
         }
 
-        public class TestSourceEntity : IWithViewModel<TestTargetEntity>
+        public class TestSourceEntity : IBinding<TestTargetEntity>
         {
             public TestControl TestControl { get; } = new TestControl();
             public TestControlWithDefaultProperty TestControlWithDefaultProperty { get; } = new TestControlWithDefaultProperty();

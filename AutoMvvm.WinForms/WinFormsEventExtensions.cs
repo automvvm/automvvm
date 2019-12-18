@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PredicateBuilderExtensions.cs" company="AutoMvvm Development Team">
+// <copyright file="WinformsExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,25 +23,41 @@
 // --------------------------------------------------------------------------------
 
 using System;
+using System.Reflection;
+using System.Windows.Forms;
+using AutoMvvm.Fluent;
+using AutoMvvm.Reflection;
 
-namespace AutoMvvm.Fluent
+namespace AutoMvvm.WinForms
 {
     /// <summary>
-    /// Extension methods for windows forms binding.
+    /// Extension methods for binding events on Windows Forms controls.
     /// </summary>
-    public static class PredicateBuilderExtensions
+    public static class WinFormsEventExtensions
     {
         /// <summary>
-        /// Defines a predicate for the target entity.
+        /// Binds the given event.
         /// </summary>
-        /// <typeparam name="T">The target type.</typeparam>
-        /// <param name="target">The target of the predicate and action.</param>
-        /// <param name="predicate">The predicate.</param>
-        /// <returns>A predicate builder.</returns>
-        public static IPredicateBuilder<T> When<T>(this T target, Func<T, bool> predicate)
-            where T : class
+        /// <param name="source">The source to bind.</param>
+        /// <param name="event">The event to bind to.</param>
+        /// <returns>An event binding builder.</returns>
+        public static void BindEvent(this Control source, Event @event, Action<ReceivedEvent> action)
         {
-            return new PredicateBuilder<T>(target, predicate);
+            var controlProvider = source.GetTreeMappingProvider();
+            var actualEvent = new Event(controlProvider.Name, @event.EventName);
+            source.AddEventBinding(new EventBinding(actualEvent, action));
+            source.HookEvent(source.GetEventInfo(actualEvent), actualEvent);
+        }
+
+        /// <summary>
+        /// Hooks the given event for automatic handling.
+        /// </summary>
+        /// <param name="source">The source entity to get the event info.</param>
+        /// <param name="event">The event.</param>
+        public static EventInfo GetEventInfo(this object source, Event @event)
+        {
+            var sourceType = source.GetType();
+            return sourceType.GetEvent(@event.EventName);
         }
     }
 }

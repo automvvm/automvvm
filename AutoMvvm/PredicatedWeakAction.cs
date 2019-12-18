@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PredicateBuilderExtensions.cs" company="AutoMvvm Development Team">
+// <copyright file="PredicatedAction.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,24 +24,40 @@
 
 using System;
 
-namespace AutoMvvm.Fluent
+namespace AutoMvvm
 {
     /// <summary>
-    /// Extension methods for windows forms binding.
+    /// A basic predicated action executed on an entity of type <typeparamref name="TTarget"/>
     /// </summary>
-    public static class PredicateBuilderExtensions
+    public class PredicatedWeakAction : WeakAction, IPredicatedWeakAction
     {
         /// <summary>
-        /// Defines a predicate for the target entity.
+        /// Gets the predicate upon which to execute the action.
         /// </summary>
-        /// <typeparam name="T">The target type.</typeparam>
-        /// <param name="target">The target of the predicate and action.</param>
-        /// <param name="predicate">The predicate.</param>
-        /// <returns>A predicate builder.</returns>
-        public static IPredicateBuilder<T> When<T>(this T target, Func<T, bool> predicate)
-            where T : class
+        public Func<object, bool> Predicate { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PredicatedAction{TTarget}"/> class.
+        /// </summary>
+        /// <param name="predicate">The action to decide whether to execute.</param>
+        /// <param name="action">The action to perform.</param>
+        public PredicatedWeakAction(object target, Action<object> action, Func<object, bool> predicate)
+            : base(target, action)
         {
-            return new PredicateBuilder<T>(target, predicate);
+            Predicate = predicate;
+        }
+
+        /// <summary>
+        /// Executes the action if the predicate is <c>true</c>.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        protected override void InvokeWithTarget(Action<object> action)
+        {
+            var target = Target;
+            if (Predicate?.Invoke(target) == false)
+                return;
+
+            base.InvokeWithTarget(action);
         }
     }
 }

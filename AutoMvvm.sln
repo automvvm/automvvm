@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMvvm.TestApp", "AutoMvvm.TestApp\AutoMvvm.TestApp.csproj", "{ADCE964D-8DDF-4DEF-ADA4-8BB68AA23F46}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMvvm", "AutoMvvm\AutoMvvm.csproj", "{0AEB89C4-D25D-4359-8ACC-D710DEC8EE3A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMvvm.WinForms", "AutoMvvm.WinForms\AutoMvvm.WinForms.csproj", "{4A06FBEF-1BD7-4232-8BF1-2E6E39B8F3AA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMvvm.TestApp", "AutoMvvm.TestApp\AutoMvvm.TestApp.csproj", "{ADCE964D-8DDF-4DEF-ADA4-8BB68AA23F46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMvvm.Tests", "AutoMvvm.Tests\AutoMvvm.Tests.csproj", "{8D4567F6-DDC9-47DD-A8D6-AE8493DCC70E}"
 EndProject

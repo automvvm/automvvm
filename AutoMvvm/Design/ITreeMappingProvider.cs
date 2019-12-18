@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="ITreeMappingProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,24 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
-
-namespace AutoMvvm.TestApp
+namespace AutoMvvm.Design
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Defines a tree hierarchical object mapping as a composite of name, parent and children providers.
+    /// </summary>
+    /// <typeparam name="T">The source object type of the tree mapping.</typeparam>
+    public interface ITreeMappingProvider<T> : ITreeMappingProvider
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
-        {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
-        }
+        /// <summary>
+        /// The source object of the tree mapping.
+        /// </summary>
+        T Source { get; set; }
+    }
+
+    /// <summary>
+    /// Defines a tree hierarchical object mapping as a composite of name, parent and children providers.
+    /// </summary>
+    public interface ITreeMappingProvider : INameProvider, IParentProvider, IChildrenProvider
+    {
     }
 }

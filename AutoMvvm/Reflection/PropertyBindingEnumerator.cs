@@ -27,28 +27,43 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using AutoMvvm.Design;
 
 namespace AutoMvvm.Reflection
 {
     /// <summary>
-    /// Collects the view model bindings for a view entity using reflection.
+    /// Collects the target property bindings for a source entity using reflection.
     /// </summary>
-    public class PropertyBindingEnumerator<T> : IEnumerable<PropertyBinding>
-        where T : class
+    public class PropertyBindingEnumerator : IEnumerable<PropertyBinding>
     {
         /// <summary>
         /// Gets the source entity to bind.
         /// </summary>
-        public IWithViewModel<T> Source { get; }
+        public object Source { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyBindingEnumerator{T}"/> class.
+        /// Gets the target entity to bind to.
+        /// </summary>
+        public object Target { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyBindingEnumerator"/> class.
         /// </summary>
         /// <param name="source">The source entity to bind.</param>
-        public PropertyBindingEnumerator(IWithViewModel<T> source)
+        public PropertyBindingEnumerator(object source, object target)
         {
             Source = source;
+            Target = target;
         }
+
+        /// <summary>
+        /// Gets a property binding enumerator for the given source entity.
+        /// </summary>
+        /// <param name="source">The source entity to bind.</param>
+        /// <param name="target">The target entity to bind to.</param>
+        /// <returns>A property binding enumerator.</returns>
+        public static PropertyBindingEnumerator For(object source, object target) =>
+            new PropertyBindingEnumerator(source, target);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -57,38 +72,46 @@ namespace AutoMvvm.Reflection
         public IEnumerator<PropertyBinding> GetEnumerator()
         {
             var source = Source;
-            var sourceType = source.GetType();
-            var viewProperties = sourceType.GetProperties();
-            var viewModel = source.GetViewModel();
-            var viewModelType = viewModel.GetType();
-            var viewModelProperties = viewModelType.GetProperties();
-            foreach (var viewControl in viewProperties)
-            {
-                var controlType = viewControl.PropertyType;
-                var defaultProperty = GetDefaultProperty(controlType);
-                var controlProperties = controlType.GetProperties();
-                foreach (var controlProperty in controlProperties)
-                {
-                    var viewModelPropertyName = (controlProperty.Name == defaultProperty) ? $"{viewControl.Name}" : $"{viewControl.Name}{controlProperty.Name}";
-                    var viewModelProperty = viewModelProperties.FirstOrDefault(vmProperty => vmProperty.Name == viewModelPropertyName);
-                    if (viewModelProperty == null)
-                        continue;
+            var target = Target;
+            var sourcePropertyBindings = GetPropertyBindings(source, target);
+            foreach (var propertyBinding in sourcePropertyBindings)
+                yield return propertyBinding;
+        }
 
-                    var sourceControl = viewControl.GetValue(source);
-                    yield return PropertyBinding.Create(PropertyDetails.Create(sourceControl, controlProperty), PropertyDetails.Create(viewModel, viewModelProperty));
-                }
+        /// <summary>
+        /// Gets a collection of property bindings from the source to the target.
+        /// </summary>
+        /// <param name="source">The source entity.</param>
+        /// <param name="target">The target entity.</param>
+        /// <returns>A collection of property bindings.</returns>
+        private static IEnumerable<PropertyBinding> GetPropertyBindings(object source, object target)
+        {
+            var targetType = target.GetType();
+            var targetProperties = targetType.GetProperties();
+            var sourceName = source.GetName();
+            var sourceType = source.GetType();
+            var defaultProperty = GetDefaultProperty(sourceType);
+            var childProperties = sourceType.GetProperties();
+            foreach (var childProperty in childProperties)
+            {
+                var targetPropertyName = (childProperty.Name == defaultProperty) ? $"{sourceName}" : $"{sourceName}{childProperty.Name}";
+                var foundTargetProperty = targetProperties.FirstOrDefault(targetProperty => targetProperty.Name == targetPropertyName);
+                if (foundTargetProperty == null)
+                    continue;
+
+                yield return PropertyBinding.Create(PropertyDetails.Create(source, childProperty), PropertyDetails.Create(target, foundTargetProperty));
             }
         }
 
         /// <summary>
-        /// Gets the default property for the given control type.
+        /// Gets the default property for the given source entity type.
         /// </summary>
-        /// <param name="controlType">The type of control to get the default property for.</param>
-        /// <returns>The default property for the given control type.</returns>
-        private static string GetDefaultProperty(Type controlType)
+        /// <param name="sourceType">The type of the source entity to get the default property for.</param>
+        /// <returns>The default property for the given source entity type.</returns>
+        private static string GetDefaultProperty(Type sourceType)
         {
             // By default it will map default binding properties, followed by default properties.
-            var controlAttributes = controlType.GetCustomAttributes(true);
+            var controlAttributes = sourceType.GetCustomAttributes(true);
             var defaultBindingProperty = controlAttributes.OfType<DefaultBindingPropertyAttribute>()
                                                           .FirstOrDefault();
             if (defaultBindingProperty != null)

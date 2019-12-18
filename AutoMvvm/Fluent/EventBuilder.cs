@@ -23,19 +23,19 @@
 // --------------------------------------------------------------------------------
 
 using System;
-using AutoMvvm.Design;
 
 namespace AutoMvvm.Fluent
 {
     /// <summary>
     /// The fluent class for building an event binding.
     /// </summary>
-    internal class EventBuilder : IEventBuilder
+    internal class EventBuilder<T> : IEventBuilder
+        where T : class
     {
         /// <summary>
         /// Gets the source of the event.
         /// </summary>
-        private object Source { get; }
+        private IBinding<T> Source { get; }
 
         /// <summary>
         /// Gets the event to bind.
@@ -47,7 +47,7 @@ namespace AutoMvvm.Fluent
         /// </summary>
         /// <param name="source">The source of the event.</param>
         /// <param name="event">The event to bind.</param>
-        public EventBuilder(object source, Event @event)
+        public EventBuilder(IBinding<T> source, Event @event)
         {
             Source = source;
             Event = @event;
@@ -59,8 +59,7 @@ namespace AutoMvvm.Fluent
         /// <param name="action">The action to bind.</param>
         public void Bind(Action<ReceivedEvent> action)
         {
-            var eventStore = Source.Get<EventBindingStore>();
-            eventStore.EventBindings.Add(new EventBinding(Event, action));
+            Source.AddEventBinding(new EventBinding(Event, action));
         }
     }
 }

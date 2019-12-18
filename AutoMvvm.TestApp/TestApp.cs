@@ -28,14 +28,14 @@ using AutoMvvm.WinForms;
 
 namespace AutoMvvm.TestApp
 {
-    public partial class TestApp : Form, IWithViewModel<TestAppViewModel>
+    public partial class TestApp : Form, IBinding<TestAppViewModel>
     {
         public TestApp()
         {
             InitializeComponent();
 
-            ui_TestComboBox.WithEvent(ComboBoxEvents.Click)
-                .Bind(this.GetViewModel().TestEvent);
+            this.BindEventsByConvention();
+            //ui_TestComboBox.BindEvent(ComboBoxEvents.Click, this.GetTarget().TestEvent);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IWithViewModel.cs" company="AutoMvvm Development Team">
+// <copyright file="FuncFactoryProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,14 +22,34 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
+using System;
+
 namespace AutoMvvm
 {
     /// <summary>
-    /// Defines the basic design of a UI with an attached view model.
+    /// Defines a default factory from a <see cref="Func{Type, object}"/> method.
     /// </summary>
-    /// <typeparam name="T">The type of the view model.</typeparam>
-    public interface IWithViewModel<out T>
-        where T : class
+    public class FuncFactoryProvider : IFactoryProvider
     {
+        /// <summary>
+        /// Gets the factory method.
+        /// </summary>
+        public Func<Type, object> Factory { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// </summary>
+        /// <param name="factory">The factory method.</param>
+        public FuncFactoryProvider(Func<Type, object> factory)
+        {
+            Factory = factory;
+        }
+
+        /// <summary>
+        /// Creates an instance of the given type.
+        /// </summary>
+        /// <param name="type">The type to create.</param>
+        /// <returns>An instance of the given type.</returns>
+        public Func<Type, object> GetFactory() => Factory;
     }
 }

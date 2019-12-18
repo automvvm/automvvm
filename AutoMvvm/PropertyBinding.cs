@@ -283,8 +283,6 @@ namespace AutoMvvm
         /// <returns><c>true</c> if the property was updated.</returns>
         public override bool UpdateTargetValue()
         {
-            var sourceObject = SourceProperty.Source;
-            var targetObject = TargetProperty.Source;
             if (!CanWriteToTarget)
                 return false;
 
@@ -297,8 +295,6 @@ namespace AutoMvvm
         /// <returns><c>true</c> if the property was updated.</returns>
         public override bool UpdateSourceValue()
         {
-            var sourceObject = SourceProperty.Source;
-            var targetObject = TargetProperty.Source;
             if (!CanWriteToSource)
                 return false;
 

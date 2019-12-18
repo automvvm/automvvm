@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="IBinding.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
-
-namespace AutoMvvm.TestApp
+namespace AutoMvvm
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Defines the basic design of an attached binding
+    /// target of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The bound target type.</typeparam>
+    public interface IBinding<out T>
+        where T : class
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
-        {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
-        }
     }
 }

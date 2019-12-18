@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="FuncTypeResolver.cs" company="AutoMvvm Development Team">
+// <copyright file="WinFormsAsyncEventProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,33 +23,32 @@
 // --------------------------------------------------------------------------------
 
 using System;
+using System.Windows.Forms;
+using AutoMvvm.Design;
 
-namespace AutoMvvm
+namespace AutoMvvm.WinForms
 {
     /// <summary>
-    /// Defines a default factory from a <see cref="Func{Type, object}"/> method.
+    /// Provides an asynchronous event routing using the Windows Forms Idle event.
     /// </summary>
-    public class FuncFactory : IFactory
+    public class WinFormsAsyncEventRouter : AsyncEventRouter
     {
         /// <summary>
-        /// Gets the factory method.
+        /// Initializes a new instance of the <see cref="WinFormsControlProvider"/> class.
         /// </summary>
-        public Func<Type, object> Factory { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the 
-        /// </summary>
-        /// <param name="factory">The factory method.</param>
-        public FuncFactory(Func<Type, object> factory)
+        public WinFormsAsyncEventRouter()
         {
-            Factory = factory;
+            // Automatically bind the application idle event only once.
+            Application.Idle -= Application_Idle;
+            Application.Idle += Application_Idle;
         }
 
         /// <summary>
-        /// Creates an instance of the given type.
+        /// Handles the application idle event for windows forms applications.
         /// </summary>
-        /// <param name="type">The type to create.</param>
-        /// <returns>An instance of the given type.</returns>
-        public object Create(Type type) => Factory?.Invoke(type);
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">The event arguments.</param>
+        /// <remarks>This will ensure that asynchronous events get routed on each application idle moment.</remarks>
+        private static void Application_Idle(object sender, EventArgs e) => RouteEvents();
     }
 }

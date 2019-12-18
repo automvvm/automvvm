@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="IValidatedTarget.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
-
-namespace AutoMvvm.TestApp
+namespace AutoMvvm
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Defines an entity with a target which may or may not be valid.
+    /// </summary>
+    public interface IValidatedTarget
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
-        {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
-        }
+        /// <summary>
+        /// Gets the target if still valid; otherwise, <c>null</c>.
+        /// </summary>
+        object Target { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this object is still valid.
+        /// </summary>
+        bool IsValid { get; }
     }
 }

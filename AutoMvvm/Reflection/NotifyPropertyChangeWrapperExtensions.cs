@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="NotifyPropertyChangeWrapper.cs" company="AutoMvvm Development Team">
+// <copyright file="NotifyPropertyChangeWrapperExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,7 +51,7 @@ namespace AutoMvvm.Reflection
     /// </remarks>
     public static class NotifyPropertyChangeWrapperExtensions
     {
-        private static ConcurrentDictionary<Type, Type> _wrapperCache = new ConcurrentDictionary<Type, Type>();
+        private static readonly ConcurrentDictionary<Type, Type> _wrapperCache = new ConcurrentDictionary<Type, Type>();
         private static bool _supportsCodeDom = true;
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace AutoMvvm.Reflection
                 throw new NullReferenceException("The source object to wrap is null.");
 
             var wrapperType = _wrapperCache.GetOrAdd(sourceType, CreateType);
-            return (wrapperType != null) ? wrapperType : sourceType;
+            return wrapperType ?? sourceType;
         }
 
         private static Type CreateType(Type sourceType)
@@ -78,7 +78,7 @@ namespace AutoMvvm.Reflection
 
             // Make sure not to wrap a type that was already wrapped.
             var namespaceExtension = ".NotifyPropertyChange";
-            if (sourceType.Namespace.EndsWith(namespaceExtension, StringComparison.InvariantCulture))
+            if (sourceType.Namespace.EndsWith(namespaceExtension, StringComparison.Ordinal))
                 return sourceType;
 
             var name = sourceType.Name;
@@ -113,16 +113,17 @@ namespace AutoMvvm.Reflection
             if (sourceType == null)
                 throw new NullReferenceException("The source object to wrap is null.");
 
-            if (!sourceType.IsClass || sourceType.IsNotPublic || sourceType.IsAbstract || sourceType.IsInterface)
+            var sourceTypeInfo = sourceType.GetTypeInfo();
+            if (!sourceTypeInfo.IsClass || sourceTypeInfo.IsNotPublic || sourceTypeInfo.IsAbstract || sourceTypeInfo.IsInterface)
                 throw new InvalidOperationException("The source class must be a class which supports public construction, private or abstract classes and interfaces are not supported.");
 
-            if (sourceType.IsCOMObject)
+            if (sourceTypeInfo.IsCOMObject)
                 throw new InvalidOperationException("COM objects are not supported for wrapping directly, you must build a .NET class around it if you want to do this.");
 
-            if (sourceType.IsGenericType && !sourceType.IsConstructedGenericType)
+            if (sourceTypeInfo.IsGenericType && !sourceType.IsConstructedGenericType)
                 throw new InvalidOperationException("Only a generic type with all type parameters satisfied are supported.  Please satisfy all generic parameters first.");
 
-            if (sourceType.IsSealed)
+            if (sourceTypeInfo.IsSealed)
                 throw new InvalidOperationException("The source must not be a sealed class, inheritance is required.");
         }
 
@@ -134,20 +135,31 @@ namespace AutoMvvm.Reflection
                 .Concat(loadedAssemblies.Select(assembly => assembly.Location))
                 .ToArray();
 
-            var csc = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
-            var parameters = new CompilerParameters(references, $"{customNamespace}.{sourceType.Name}{Path.GetRandomFileName()}.dll", false);
-            parameters.GenerateExecutable = false;
-
-            var results = csc.CompileAssemblyFromSource(parameters, sourceCode);
-            if (results.Errors.Count > 0)
+            using (var csc = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } }))
             {
+                var tempPath = Path.GetTempPath();
+                var fileName = $"{customNamespace}.{sourceType.Name}{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}.dll";
+                var parameters = new CompilerParameters(references, Path.Combine(tempPath, fileName), false)
+                {
+                    GenerateExecutable = false,
+                    GenerateInMemory = true
+                };
 
-                var failureMessage = $"Failed to wrap an instance of {sourceType.FullName}:";
-                failureMessage += Environment.NewLine + string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>().ToList().Select(error => error.ErrorText));
-                throw new InvalidOperationException(failureMessage);
+                var results = csc.CompileAssemblyFromSource(parameters, sourceCode);
+                if (results.Errors.Count > 0)
+                {
+
+                    var failureMessage = $"Failed to wrap an instance of {sourceType.FullName}:";
+                    failureMessage += Environment.NewLine + string.Join(Environment.NewLine, results.Errors.Cast<CompilerError>().ToList().Select(error => error.ErrorText));
+                    throw new InvalidOperationException(failureMessage);
+                }
+                var type = results.CompiledAssembly.GetType($"{customNamespace}.{sourceType.Name}");
+
+                // Should be generating the file in memory, but if not this will ensure no files are left behind.
+                results.TempFiles.KeepFiles = false;
+                results.TempFiles.Delete();
+                return type;
             }
-
-            return results.CompiledAssembly.GetType($"{customNamespace}.{sourceType.Name}");
         }
 
         private static Type CreateTypeNetCore(Type sourceType, string targetType, string sourceCode)
@@ -165,7 +177,7 @@ namespace AutoMvvm.Reflection
                 MetadataReference.CreateFromFile(sourceType.GetTypeInfo().Assembly.Location)
             }.Concat(referencedMetadata).ToArray();
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
+            var compilation = CSharpCompilation.Create(
                 assemblyName,
                 syntaxTrees: new[] { syntaxTree },
                 references: references,
@@ -198,7 +210,7 @@ namespace AutoMvvm.Reflection
             var implementedInterfaces = new HashSet<Type>(sourceType.GetInterfaces());
             var sourceImplementsPropertyChanging = implementedInterfaces.Contains(typeof(INotifyPropertyChanging));
             var sourceImplementsPropertyChanged = implementedInterfaces.Contains(typeof(INotifyPropertyChanged));
-            var properties = sourceType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var properties = sourceType.GetRuntimeProperties();
             var sourceCode = new StringBuilder();
             sourceCode.AppendLine("using System;");
             sourceCode.AppendLine("using System.ComponentModel;");
@@ -226,8 +238,8 @@ namespace AutoMvvm.Reflection
             foreach (var property in properties)
             {
                 // Get whether the base get and set methods are available and virtual.
-                var getMethodAvailable = property.CanRead && property.GetGetMethod()?.IsVirtual == true;
-                var setMethodAvailable = property.CanWrite && property.GetSetMethod()?.IsVirtual == true;
+                var getMethodAvailable = property.CanRead && property.GetMethod?.IsVirtual == true;
+                var setMethodAvailable = property.CanWrite && property.SetMethod?.IsVirtual == true;
 
                 // If neither the get or set method is available, we don't want to generate a property override.
                 if (!getMethodAvailable && !setMethodAvailable)

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="ViewModelExtensions.cs" company="AutoMvvm Development Team">
+// <copyright file="ReceivedEventQueue.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,25 +22,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using AutoMvvm.Design;
+using System.Collections.Generic;
 
-namespace AutoMvvm
+namespace AutoMvvm.Design
 {
     /// <summary>
-    /// Extension methods for handling the <see cref="IWithViewModel{T}"/> interface.
+    /// Contains the queue of unhandled received events.
     /// </summary>
-    public static class ViewModelExtensions
+    public class ReceivedEventQueue
     {
         /// <summary>
-        /// Gets the view model for the current source.
+        /// Gets the queue of received events waiting to be handled.
         /// </summary>
-        /// <typeparam name="T">The type of the view model.</typeparam>
-        /// <param name="source">The source.</param>
-        /// <returns>The view model for the current source.</returns>
-        public static T GetViewModel<T>(this IWithViewModel<T> source)
-            where T : class
-        {
-            return source.Get<T>();
-        }
+        public Queue<ReceivedEvent> ReceivedEvents { get; } = new Queue<ReceivedEvent>();
     }
 }

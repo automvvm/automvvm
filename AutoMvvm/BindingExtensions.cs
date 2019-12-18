@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IFactory.cs" company="AutoMvvm Development Team">
+// <copyright file="ViewModelExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,19 +23,38 @@
 // --------------------------------------------------------------------------------
 
 using System;
+using AutoMvvm.Design;
+using AutoMvvm.Fluent;
 
 namespace AutoMvvm
 {
     /// <summary>
-    /// Defines a type generator that instantiates an instance of the given type.
+    /// Extension methods for handling the <see cref="IBinding{T}"/> interface.
     /// </summary>
-    public interface IFactory
+    public static class BindingExtensions
     {
         /// <summary>
-        /// Creates an instance of the given type.
+        /// Gets the bound target instance.
         /// </summary>
-        /// <param name="type">The type to create.</param>
-        /// <returns>An instance of the given type.</returns>
-        object Create(Type type);
+        /// <typeparam name="T">The bound target type.</typeparam>
+        /// <param name="source">The source.</param>
+        /// <returns>The bound target instance.</returns>
+        public static T GetTarget<T>(this IBinding<T> source)
+            where T : class
+        {
+            return source.Get<T>();
+        }
+
+        /// <summary>
+        /// Defines a predicated binding to an action.
+        /// </summary>
+        /// <param name="source">The source entity to bind.</param>
+        /// <param name="predicate">The predicate defining when to perform the action.</param>
+        /// <returns>A predicate builder fluent interface.</returns>
+        public static IPredicateBuilder<T> When<T>(this T source, Func<T, bool> predicate)
+            where T : class
+        {
+            return new PredicateBuilder<T>(source, predicate);
+        }
     }
 }

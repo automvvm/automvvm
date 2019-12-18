@@ -23,6 +23,7 @@
 // --------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AutoMvvm
 {
@@ -41,9 +42,11 @@ namespace AutoMvvm
         /// </summary>
         public Event Event { get; }
 
+
         /// <summary>
         /// Gets the event arguments.
         /// </summary>
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "lowercase 'e' is the common expected naming convention for this property.")]
         public EventArgs e { get; }
 
         /// <summary>
@@ -57,6 +60,21 @@ namespace AutoMvvm
             Source = source;
             Event = @event;
             this.e = e;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ReceivedEvent{TEventArgs}"/> from the given
+        /// source, <see cref="T:Event"/> and <typeparamref name="TEventArgs"/>.
+        /// </summary>
+        /// <typeparam name="TEventArgs">The type of the <see cref="EventArgs"/></typeparam>
+        /// <param name="source">The event source.</param>
+        /// <param name="event">The event that was received.</param>
+        /// <param name="e">The event arguments.</param>
+        /// <returns></returns>
+        public static ReceivedEvent<TEventArgs> From<TEventArgs>(object source, Event @event, TEventArgs e)
+            where TEventArgs : EventArgs
+        {
+            return new ReceivedEvent<TEventArgs>(source, @event, e);
         }
     }
 

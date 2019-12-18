@@ -31,13 +31,13 @@ namespace AutoMvvm.WinForms
     /// </summary>
     public static class ComboBoxEvents
     {
-        public static ComboBoxEvent Click = new ComboBoxEvent(nameof(ComboBox.Click));
-        public static ComboBoxEvent TextChanged = new ComboBoxEvent(nameof(ComboBox.TextChanged));
-        public static ComboBoxEvent SelectedIndexChanged = new ComboBoxEvent(nameof(ComboBox.SelectedIndexChanged));
-        public static ComboBoxEvent MouseDown = new ComboBoxEvent(nameof(ComboBox.MouseDown));
-        public static ComboBoxEvent MouseHover = new ComboBoxEvent(nameof(ComboBox.MouseHover));
-        public static ComboBoxEvent MouseEnter = new ComboBoxEvent(nameof(ComboBox.MouseEnter));
-        public static ComboBoxEvent MouseLeave = new ComboBoxEvent(nameof(ComboBox.MouseLeave));
-        public static ComboBoxEvent MouseMove = new ComboBoxEvent(nameof(ComboBox.MouseMove));
+        public static Event Click = new Event(nameof(ComboBox.Click));
+        public static Event TextChanged = new Event(nameof(ComboBox.TextChanged));
+        public static Event SelectedIndexChanged = new Event(nameof(ComboBox.SelectedIndexChanged));
+        public static Event MouseDown = new Event(nameof(ComboBox.MouseDown));
+        public static Event MouseHover = new Event(nameof(ComboBox.MouseHover));
+        public static Event MouseEnter = new Event(nameof(ComboBox.MouseEnter));
+        public static Event MouseLeave = new Event(nameof(ComboBox.MouseLeave));
+        public static Event MouseMove = new Event(nameof(ComboBox.MouseMove));
     }
 }

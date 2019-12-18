@@ -28,9 +28,10 @@ using NUnit.Framework;
 
 namespace AutoMvvm.Tests
 {
-    public abstract class ViewModelExtensionsTests
+    [TestFixture]
+    public abstract class BindingExtensionsTests
     {
-        private BaseView _view;
+        private BaseSource _source;
 
         [SetUp]
         protected virtual void Setup()
@@ -38,128 +39,130 @@ namespace AutoMvvm.Tests
         }
 
         [TestFixture]
-        public class GetViewModelFromBaseView : ViewModelExtensionsTests
+        public class GetTargetFromBaseSource : BindingExtensionsTests
         {
             protected override void Setup()
             {
                 base.Setup();
-                _view = new BaseView();
+                _source = new BaseSource();
             }
 
             [Test]
             public void ItShouldGiveViewModelInstance()
             {
-                var viewModel = _view.GetViewModel();
-                viewModel.Should().BeOfType<BaseViewModel>();
+                var target = _source.GetTarget();
+                target.Should().BeOfType<BaseTarget>();
             }
 
             [Test]
             public void ItShouldGiveSameViewModelForSameViewTwice()
             {
-                var viewModel = _view.GetViewModel();
-                var viewModel2 = _view.GetViewModel();
-                viewModel.Should().BeSameAs(viewModel2);
+                var target = _source.GetTarget();
+                var target2 = _source.GetTarget();
+                target.Should().BeSameAs(target2);
             }
 
             [Test]
             public void ItShouldGiveDifferentViewModelForDifferentView()
             {
-                var view2 = new BaseView();
-                var viewModel = _view.GetViewModel();
-                var viewModel2 = view2.GetViewModel();
-                viewModel.Should().NotBeSameAs(viewModel2);
+                var source2 = new BaseSource();
+                var target = _source.GetTarget();
+                var target2 = source2.GetTarget();
+                target.Should().NotBeSameAs(target2);
             }
         }
 
         [TestFixture]
-        public class GetViewModelFromTypeResolverView : ViewModelExtensionsTests
+        public class GetTargetFromTypeResolverSource : BindingExtensionsTests
         {
             protected override void Setup()
             {
                 base.Setup();
-                _view = new TypeResolverView();
+                _source = new TypeResolverSource();
             }
 
             [Test]
             public void ItShouldGiveViewModelInstance()
             {
-                var viewModel = _view.GetViewModel();
-                viewModel.Should().BeOfType<ExtendedViewModel>();
+                var viewModel = _source.GetTarget();
+                viewModel.Should().BeOfType<ExtendedTarget>();
             }
         }
 
         [TestFixture]
-        public class GetViewModelFromFactoryTypeResolverView : ViewModelExtensionsTests
+        public class GetTargetFromFactoryTypeResolverSource : BindingExtensionsTests
         {
             protected override void Setup()
             {
                 base.Setup();
-                _view = new FactoryTypeResolverView();
+                _source = new FactoryTypeResolverSource();
             }
 
             [Test]
             public void ItShouldGiveViewModelInstance()
             {
-                var viewModel = _view.GetViewModel();
-                viewModel.Should().BeOfType<SpecialViewModel>();
+                var target = _source.GetTarget();
+                target.Should().BeOfType<SpecialTarget>();
             }
 
             [Test]
             public void ItShouldGiveInstanceWithParameterSet()
             {
-                var viewModel = (SpecialViewModel)_view.GetViewModel();
-                viewModel.SpecialParameter.Should().Be(7);
+                var target = (SpecialTarget)_source.GetTarget();
+                target.SpecialParameter.Should().Be(7);
             }
         }
     }
 
-    public class BaseView : IWithViewModel<BaseViewModel>
+    public class BaseSource : IBinding<BaseTarget>
     {
     }
 
-    public class TypeResolverView : BaseView, ITypeResolver
+    public class TypeResolverSource : BaseSource, ITypeResolver
     {
         public Type ResolveType(Type type)
         {
-            if (type == typeof(BaseViewModel))
-                return typeof(ExtendedViewModel);
+            if (type == typeof(BaseTarget))
+                return typeof(ExtendedTarget);
 
             return type;
         }
     }
 
-    public class FactoryTypeResolverView : BaseView, ITypeResolver, IFactory
+    public class FactoryTypeResolverSource : BaseSource, ITypeResolver, IFactoryProvider
     {
-        private int _specialParameter = 7;
-        
-        public object Create(Type type)
+        private readonly int _specialParameter = 7;
+
+        public Type ResolveType(Type type)
         {
-            if (type == typeof(SpecialViewModel))
-                return new SpecialViewModel(_specialParameter);
+            if (type == typeof(BaseTarget))
+                return typeof(SpecialTarget);
+
+            return type;
+        }
+
+        public Func<Type, object> GetFactory() => Create;
+        
+        private object Create(Type type)
+        {
+            if (type == typeof(SpecialTarget))
+                return new SpecialTarget(_specialParameter);
 
             return Activator.CreateInstance(type);
         }
-
-        public Type ResolveType(Type type)
-        {
-            if (type == typeof(BaseViewModel))
-                return typeof(SpecialViewModel);
-
-            return type;
-        }
     }
 
-    public class BaseViewModel
+    public class BaseTarget
     {
     }
 
-    public class ExtendedViewModel : BaseViewModel
+    public class ExtendedTarget : BaseTarget
     {
     }
 
-    public class SpecialViewModel : BaseViewModel
+    public class SpecialTarget : BaseTarget
     {
-        public SpecialViewModel(int specialParameter)
+        public SpecialTarget(int specialParameter)
         {
             SpecialParameter = specialParameter;
         }

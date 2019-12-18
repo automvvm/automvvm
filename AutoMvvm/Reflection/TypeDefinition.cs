@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PropertyDetails.cs" company="AutoMvvm Development Team">
+// <copyright file="TypeDefinition.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using AutoMvvm.Design;
 
@@ -45,7 +44,7 @@ namespace AutoMvvm.Reflection
         /// <summary>
         /// Gets the generic parameters.
         /// </summary>
-        public  IList<Type> GenericParameters { get; }
+        public IList<Type> GenericParameters { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeDefinition"/> class.
@@ -64,7 +63,7 @@ namespace AutoMvvm.Reflection
         public TypeDefinition(Type type, params Type[] genericParameters)
         {
             Type = type;
-            GenericParameters = new ReadOnlyCollection<Type>(genericParameters);
+            GenericParameters = Array.AsReadOnly(genericParameters);
         }
 
         /// <summary>

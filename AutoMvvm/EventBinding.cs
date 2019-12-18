@@ -32,6 +32,16 @@ namespace AutoMvvm
     public class EventBinding
     {
         /// <summary>
+        /// Gets the target of the bound event if still available, otherwise <c>null</c>.
+        /// </summary>
+        public object Target => Action.Target;
+
+        /// <summary>
+        /// Indicates whether this event binding is still valid.
+        /// </summary>
+        public bool IsValid => Action.IsValid;
+
+        /// <summary>
         /// Gets the event bound.
         /// </summary>
         public Event Event { get; }
@@ -39,17 +49,46 @@ namespace AutoMvvm
         /// <summary>
         /// Gets the action to perform for the event.
         /// </summary>
-        public Action<ReceivedEvent> Action { get; }
+        public IWeakAction<ReceivedEvent> Action { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventBinding"/> class.
         /// </summary>
         /// <param name="event">The event bound.</param>
-        /// <param name="action">The action to perform for the event.</param>
+        /// <param name="action">The action to perform for the event along with the target.</param>
         public EventBinding(Event @event, Action<ReceivedEvent> action)
+            : this(@event, (WeakAction<ReceivedEvent>)action)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventBinding"/> class.
+        /// </summary>
+        /// <param name="event">The event bound.</param>
+        /// <param name="action">The weak action to perform for the event.</param>
+        public EventBinding(Event @event, IWeakAction<ReceivedEvent> action)
+        {
+            if (string.IsNullOrEmpty(@event.SourceName) || string.IsNullOrEmpty(@event.TargetMethodName))
+                throw new ArgumentOutOfRangeException(nameof(@event), "The event provided must specify a source entity name and provide a non-empty target method name.");
+
             Event = @event;
             Action = action;
         }
+
+        /// <summary>
+        /// Executes the event handler with the given event source and <typeparamref name="TEventArgs"/>.
+        /// </summary>
+        /// <param name="e">The <typeparamref name="TEventArgs"/> details.</param>
+        public void HandleEvent<TEventArgs>(object source, TEventArgs e)
+            where TEventArgs : EventArgs
+        {
+            HandleEvent(ReceivedEvent.From(source, Event, e));
+        }
+
+        /// <summary>
+        /// Executes the event handler with the given <see cref="ReceivedEvent"/> details.
+        /// </summary>
+        /// <param name="e">The <see cref="ReceivedEvent"/> details.</param>
+        public void HandleEvent(ReceivedEvent e) => Action?.Invoke(e);
     }
 }

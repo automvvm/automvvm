@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="NotifyPropertyChangeWrapper.cs" company="AutoMvvm Development Team">
+// <copyright file="NotifyPropertyChangeTypeResolver.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

@@ -27,12 +27,12 @@ using System.Collections.Generic;
 namespace AutoMvvm.Design
 {
     /// <summary>
-    /// Contains the historical unhandled event queue.
+    /// Contains the collection of assigned event bindings.
     /// </summary>
     public class EventBindingStore
     {
         /// <summary>
-        /// Gets a list of bound events.
+        /// Gets the list of bound events.
         /// </summary>
         public IList<EventBinding> EventBindings { get; } = new List<EventBinding>();
     }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="EventQueue.cs" company="AutoMvvm Development Team">
+// <copyright file="INameProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,18 +22,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace AutoMvvm.Design
 {
     /// <summary>
-    /// Contains the historical unhandled event queue.
+    /// Defines an interface for providing a name.
     /// </summary>
-    public class EventQueue
+    public interface INameProvider
     {
         /// <summary>
-        /// A queue of events waiting to be handled.
+        /// Gets the name of this entity.
         /// </summary>
-        public Queue<ReceivedEvent> Events { get; } = new Queue<ReceivedEvent>();
+        string Name { get; }
     }
 }

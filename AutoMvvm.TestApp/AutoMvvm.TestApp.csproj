@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <OutputType>WinExe</OutputType>
     <StartupObject />
@@ -10,10 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AutoMvvm.WinForms\AutoMvvm.WinForms.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>

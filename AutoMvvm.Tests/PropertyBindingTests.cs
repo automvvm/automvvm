@@ -29,6 +29,7 @@ using NUnit.Framework;
 
 namespace AutoMvvm.Tests
 {
+    [TestFixture]
     public abstract class PropertyBindingTests
     {
         private TestEntity _testEntitySource;
@@ -37,20 +38,24 @@ namespace AutoMvvm.Tests
         private const int TestEntitySourceDefault = 5;
         private const int TestEntityTargetDefault = 8;
         private const int TestEntityNewValue = 10;
-        private static int[] TestEntitySourceListDefault = { 2, 3, 4, 5 };
-        private static int[] TestEntityTargetListDefault = { 10, 11, 12, 13 };
-        private static int[] TestEntityNewList = { 6, 7, 8, 9 };
+        private static readonly int[] TestEntitySourceListDefault = { 2, 3, 4, 5 };
+        private static readonly int[] TestEntityTargetListDefault = { 10, 11, 12, 13 };
+        private static readonly int[] TestEntityNewList = { 6, 7, 8, 9 };
 
         [SetUp]
         protected virtual void Setup()
         {
-            _testEntitySource = new TestEntity();
-            _testEntitySource.TestField1 = TestEntitySourceDefault;
-            _testEntitySource.TestField2 = (TestEntitySourceDefault + 1).ToString();
+            _testEntitySource = new TestEntity
+            {
+                TestField1 = TestEntitySourceDefault,
+                TestField2 = (TestEntitySourceDefault + 1).ToString()
+            };
             Array.ForEach(TestEntitySourceListDefault, value => _testEntitySource.TestField3.Add(value));
-            _testEntityTarget = new TestEntity();
-            _testEntityTarget.TestField1 = TestEntityTargetDefault;
-            _testEntityTarget.TestField2 = (TestEntityTargetDefault + 1).ToString();
+            _testEntityTarget = new TestEntity
+            {
+                TestField1 = TestEntityTargetDefault,
+                TestField2 = (TestEntityTargetDefault + 1).ToString()
+            };
             Array.ForEach(TestEntityTargetListDefault, value => _testEntityTarget.TestField3.Add(value));
         }
 

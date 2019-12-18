@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PropertyDetails.cs" company="AutoMvvm Development Team">
+// <copyright file="TypeExtensions.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AutoMvvm.Reflection
 {
@@ -41,7 +43,7 @@ namespace AutoMvvm.Reflection
         /// <param name="type">The generic type definition.</param>
         /// <param name="genericTypeParameters">The generic type parameters.</param>
         /// <returns>The constructed generic type matching the given type parameters.</returns>
-        public static Type GetGenericType(this Type type, params Type[] genericTypeParameters) => 
+        public static Type GetGenericType(this Type type, params Type[] genericTypeParameters) =>
             _typeCache.GetOrAdd(new TypeDefinition(type, genericTypeParameters), typeDefinition => typeDefinition.MakeGenericType());
 
         /// <summary>
@@ -62,5 +64,53 @@ namespace AutoMvvm.Reflection
         /// <remarks>TODO: Stop using Activator.CreateInstance and create a type generator.</remarks>
         public static object CreateInstance(this Type type, params object[] parameters) =>
             Activator.CreateInstance(type, parameters);
+
+        /// <summary>
+        /// Gets a value indicating whether the source entity has an <see cref="IBinding{T}"/>
+        /// interface with the given target entity.
+        /// </summary>
+        /// <param name="source">The source entity.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>
+        /// A value indicating whether the source entity has an <see cref="IBinding{T}"/> interface
+        /// with the given target entity.
+        /// </returns>
+        public static bool HasTargetType(this object source, Type targetType)
+        {
+            var sourceType = source.GetType();
+            return typeof(IBinding<>).MakeGenericType(targetType).IsAssignableFrom(sourceType);
+        }
+
+        /// <summary>
+        /// Determines if this type has an interface that matches the given match interface type.
+        /// </summary>
+        /// <param name="type">The type to match interfaces for.</param>
+        /// <param name="matchInterfaceType">The interface type to match.</param>
+        /// <returns><c>true</c> if this type has an interface that matches the given match interface type.</returns>
+        public static bool HasInterfaceLike(this Type type, Type matchInterfaceType) =>
+            GetInterfacesLike(type, matchInterfaceType).FirstOrDefault() != null;
+
+        /// <summary>
+        /// Gets a collection of interfaces that match the given match interface type.
+        /// </summary>
+        /// <param name="type">The type to match interfaces for.</param>
+        /// <param name="matchInterfaceType">The interface type to match.</param>
+        /// <returns>A collection of interfaces that match the given match interface type.</returns>
+        public static IEnumerable<Type> GetInterfacesLike(this Type type, Type matchInterfaceType)
+        {
+            var interfaceTypes = type.GetInterfaces();
+            foreach (var interfaceType in interfaceTypes)
+            {
+                if (interfaceType != matchInterfaceType &&
+                    (!interfaceType.IsGenericType ||
+                    !matchInterfaceType.IsGenericTypeDefinition ||
+                    interfaceType.GetGenericTypeDefinition() != matchInterfaceType))
+                {
+                    continue;
+                }
+
+                yield return interfaceType;
+            }
+        }
     }
 }

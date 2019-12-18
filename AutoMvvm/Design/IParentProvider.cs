@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="TestApp.cs" company="AutoMvvm Development Team">
+// <copyright file="IParentProvider.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,15 +22,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System.Windows.Forms;
-
-namespace AutoMvvm.TestApp
+namespace AutoMvvm.Design
 {
-    public class TestAppViewModel
+    /// <summary>
+    /// Defines an interface for providing the parent of this entity.
+    /// </summary>
+    public interface IParentProvider
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
-        {
-            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
-        }
+        /// <summary>
+        /// Gets the parent of this entity.
+        /// </summary>
+        object Parent { get; }
     }
 }

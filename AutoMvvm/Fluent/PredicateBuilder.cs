@@ -35,24 +35,24 @@ namespace AutoMvvm.Fluent
         where T : class
     {
         /// <summary>
-        /// Gets the source object to bind to.
+        /// Gets the target of the predicate and action.
         /// </summary>
-        protected object Source { get; }
+        protected T Target { get; }
 
         /// <summary>
         /// Gets the predicate.
         /// </summary>
-        protected Func<T, bool> Predicate { get; }
+        protected Func<object, bool> Predicate { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PredicateBuilder{T}"/> class.
         /// </summary>
-        /// <param name="source">The source object to bind to.</param>
+        /// <param name="target">The target of the predicate and action.</param>
         /// <param name="predicate">The predicate.</param>
-        public PredicateBuilder(object source, Func<T, bool> predicate)
+        public PredicateBuilder(T target, Func<T, bool> predicate)
         {
-            Source = source;
-            Predicate = predicate;
+            Target = target;
+            Predicate = t => (predicate == null) ? true : predicate.Invoke((T)t);
         }
 
         /// <summary>
@@ -61,8 +61,9 @@ namespace AutoMvvm.Fluent
         /// <param name="action">The action to perform.</param>
         public void Do(Action<T> action)
         {
-            var predicateStore = Source.Get<PredicateStore<T>>();
-            predicateStore.Actions.Add(new PredicatedAction<T>(Predicate, action));
+            Action<object> castedAction = t => action?.Invoke((T)t);
+            var predicateStore = Target.Get<PredicateStore<T>>();
+            predicateStore.Actions.Add(new PredicatedWeakAction(Target, castedAction, Predicate));
         }
     }
 }

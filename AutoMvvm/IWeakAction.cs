@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IPredicatedAction.cs" company="AutoMvvm Development Team">
+// <copyright file="IWeakAction.cs" company="AutoMvvm Development Team">
 // Copyright © 2019 AutoMvvm Development Team
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,30 +22,41 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
-using System;
-
 namespace AutoMvvm
 {
     /// <summary>
-    /// Represents a predicated action execute on an entity of type <typeparamref name="T"/>.
+    /// Defines an action delegate interface with a weak reference to the target.
     /// </summary>
-    /// <typeparam name="T">The entity type.</typeparam>
-    public interface IPredicatedAction<in T>
+    public interface IWeakAction : IValidatedTarget
     {
         /// <summary>
-        /// Gets the predicate upon which to execute the action.
+        /// Invokes this action delegate if the target reference is still accessible.
         /// </summary>
-        Func<T, bool> Predicate { get; }
+        public void Invoke();
+    }
 
+    /// <summary>
+    /// Defines an action delegate interface with a weak reference to the target.
+    /// </summary>
+    /// <typeparam name="T">The type of the parameter</typeparam>
+    public interface IWeakAction<in T> : IValidatedTarget
+    {
         /// <summary>
-        /// Gets the bound action.
+        /// Invokes this action delegate if the target reference is still accessible.
         /// </summary>
-        Action<T> Action { get; }
+        public void Invoke(T param);
+    }
 
+    /// <summary>
+    /// Defines an action delegate interface with a weak reference to the target.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first parameter</typeparam>
+    /// <typeparam name="T1">The type of the second parameter</typeparam>
+    public interface IWeakAction<in T1, in T2> : IValidatedTarget
+    {
         /// <summary>
-        /// Executes the action with the given entity if the predicate is <c>true</c>.
+        /// Invokes this action delegate if the target reference is still accessible.
         /// </summary>
-        /// <param name="entity">The entity to act upon.</param>
-        void Execute(T entity);
+        public void Invoke(T1 param1, T2 param2);
     }
 }

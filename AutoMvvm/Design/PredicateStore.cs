@@ -35,6 +35,6 @@ namespace AutoMvvm.Design
         /// <summary>
         /// Gets the predicate action store.
         /// </summary>
-        public IList<IPredicatedAction<T>> Actions { get; } = new List<IPredicatedAction<T>>();
+        public IList<IPredicatedWeakAction> Actions { get; } = new List<IPredicatedWeakAction>();
     }
 }

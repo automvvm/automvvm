@@ -23,7 +23,6 @@
 // --------------------------------------------------------------------------------
 
 using System.Windows.Forms;
-using AutoMvvm.Fluent;
 using AutoMvvm.WinForms;
 
 namespace AutoMvvm.TestApp
@@ -35,7 +34,6 @@ namespace AutoMvvm.TestApp
             InitializeComponent();
 
             this.BindEventsByConvention();
-            //ui_TestComboBox.BindEvent(ComboBoxEvents.Click, this.GetTarget().TestEvent);
         }
     }
 }

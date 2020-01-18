@@ -22,13 +22,19 @@
 // </copyright>
 // --------------------------------------------------------------------------------
 
+using System;
 using System.Windows.Forms;
 
 namespace AutoMvvm.TestApp
 {
     public class TestAppViewModel
     {
-        public void ui_TestComboBoxClick(ReceivedEvent receivedEvent)
+        public void TestComboBoxClick(ReceivedEvent receivedEvent)
+        {
+            MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
+        }
+
+        public void TestComboBoxSelectedIndexChanged(ReceivedEvent receivedEvent)
         {
             MessageBox.Show($"{((Control)receivedEvent.Source).Name} {receivedEvent.Event.EventName}.");
         }
